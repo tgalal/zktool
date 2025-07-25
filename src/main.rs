@@ -2,7 +2,7 @@ use clap::{Parser, Subcommand};
 use anyhow::{Result};
 
 pub mod commands;
-use commands::{verify, claim};
+use commands::{verify, claim, command};
 
 
 #[derive(Parser, Debug)]
@@ -39,6 +39,20 @@ enum Commands {
         #[arg(required=true)]
         email: String,
     },
+    Command {
+        #[arg(short, long, required=true)]
+        verification_key: String,
+        #[arg(short, long, required=true)]
+        proof: String,
+        #[arg(short, long, required=true)]
+        inp: String,
+        #[arg(short, long, required=true)]
+        dkim_pk: String,
+        #[arg(short, long, required=true)]
+        email: String,
+        #[arg(required=true)]
+        command: String,
+    },
 }
 
 fn main() -> Result<()> {
@@ -47,6 +61,8 @@ fn main() -> Result<()> {
     match args.cmd {
         Commands::Verify {verification_key, proof, inp} => verify::exec(&verification_key, &proof, &inp),
         Commands::Claim {verification_key, proof, inp, dkim_pk, address, resolver, email} =>
-            claim::exec(&verification_key, &proof, &inp, &dkim_pk, &address, &resolver, &email)
+            claim::exec(&verification_key, &proof, &inp, &dkim_pk, &address, &resolver, &email),
+        Commands::Command {verification_key, proof, inp, dkim_pk, email, command} =>
+            command::exec(&verification_key, &proof, &inp, &dkim_pk, &email, &command)
     }
 }

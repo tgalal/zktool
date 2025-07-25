@@ -19,19 +19,19 @@ pub fn exec(verification_key: &str, proof: &str, inp: &str, dkim_pk: &str, addre
     // Verify given email matches that in public inputs
     let expected_email = read_string(&public_inputs, EMAIL_ADDRESS_OFFSET, 12)?;
     if expected_email != email {
-        bail!("Emails do not match");
+        bail!("Email does not match proof");
     }
 
     let expected_command = read_string(&public_inputs,COMMAND_OFFSET, 20)?;
     let actual_command = format!("Claim ENS name for address {address} with resolver {resolver}");
     if expected_command != actual_command {
-        bail!("Commands do not much");
+        bail!("Command does not much proof");
     }
  
     let expected_pubkeyhash = hex::encode(read_bytes(&public_inputs,PUBKEY_HASH_OFFSET, PUBKEY_HASH_COUNT)?);
 
     if expected_pubkeyhash != dkim_pk {
-        bail!("Mismatching pubkey hash");
+        bail!("Pubkey does not match proof");
     }
 
     let verification_result = Groth16::<Bn254, CircomReduction>::verify(&vkey, &public_inputs, &proof)
